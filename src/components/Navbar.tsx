@@ -178,17 +178,18 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Admin Login Button (Mobile Header) */}
+            {/* Admin Login Button (Mobile Header - Visible Badge) */}
             <button
               onClick={openLoginModal}
-              className={`p-2 rounded-full transition-colors duration-200 cursor-pointer border ${
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer border ${
                 isAdmin
-                  ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
-                  : "hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800"
+                  ? "bg-emerald-600 text-white border-emerald-500 shadow-sm"
+                  : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-300/80 dark:border-emerald-500/30"
               }`}
               title={isAdmin ? "Admin Active" : "Login Admin"}
             >
-              <Lock className={`w-4 h-4 ${isAdmin ? "text-amber-500" : ""}`} />
+              <Lock className={`w-3.5 h-3.5 ${isAdmin ? "text-amber-300" : "text-amber-500"}`} />
+              <span>{isAdmin ? "Admin" : "Login"}</span>
             </button>
 
             {/* Hamburger Button */}
@@ -209,13 +210,27 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       <div
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-b border-emerald-100/5 dark:border-emerald-950/10 ${
+        className={`md:hidden overflow-y-auto transition-all duration-300 ease-in-out border-b border-emerald-100/5 dark:border-emerald-950/10 ${
           isOpen
-            ? "max-h-[30rem] opacity-100 bg-white dark:bg-zinc-950"
+            ? "max-h-[85vh] opacity-100 bg-white dark:bg-zinc-950 shadow-2xl"
             : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-3 pt-2 pb-4 space-y-1 sm:px-3 shadow-inner">
+        <div className="px-3 pt-3 pb-6 space-y-2 sm:px-3 shadow-inner">
+          {/* Admin Portal Button Prominently Placed at TOP of Mobile Drawer */}
+          <div className="pb-2 mb-2 border-b border-slate-100 dark:border-zinc-800">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                openLoginModal();
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-md transition-all cursor-pointer"
+            >
+              <Lock className="w-4 h-4 text-amber-300" />
+              <span>{isAdmin ? "Portal Admin Padukuhan (Aktif)" : "Login Admin Padukuhan"}</span>
+            </button>
+          </div>
+
           {navItems.map((item) => {
             const isActive = isHome && activeSection === item.id;
 
@@ -234,20 +249,6 @@ export default function Navbar() {
               </a>
             );
           })}
-
-          {/* Admin Portal Link in Mobile Drawer */}
-          <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 mt-2">
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                openLoginModal();
-              }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all"
-            >
-              <Lock className="w-4 h-4 text-amber-300" />
-              <span>{isAdmin ? "Portal Admin (Aktif)" : "Login Admin Padukuhan"}</span>
-            </button>
-          </div>
         </div>
       </div>
         </div>
