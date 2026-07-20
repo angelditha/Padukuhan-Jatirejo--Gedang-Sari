@@ -73,7 +73,7 @@ export default function PetaKontak() {
     }
   };
 
-  const handleSendWhatsApp = (e: React.MouseEvent) => {
+  const handleSendWhatsApp = (e: React.MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
 
