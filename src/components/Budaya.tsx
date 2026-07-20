@@ -37,7 +37,7 @@ export default function Budaya() {
     }
 
     // Cloud Sync fetch
-    fetch("/api/cloud-sync")
+    fetch("/api/cloud-sync", { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (resData?.success && resData?.data?.budaya && Array.isArray(resData.data.budaya)) {
@@ -53,7 +53,7 @@ export default function Budaya() {
     localStorage.setItem("jatirejo_budaya", JSON.stringify(newItems));
 
     // Cloud Push
-    fetch("/api/cloud-sync")
+    fetch("/api/cloud-sync", { cache: "no-store" })
       .then((res) => res.json())
       .then((currentData) => {
         const fullPayload = {

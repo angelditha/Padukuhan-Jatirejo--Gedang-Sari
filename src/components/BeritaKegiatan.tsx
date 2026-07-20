@@ -37,7 +37,7 @@ export default function BeritaKegiatan() {
     }
 
     // Cloud Sync fetch
-    fetch("/api/cloud-sync")
+    fetch("/api/cloud-sync", { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
@@ -53,7 +53,7 @@ export default function BeritaKegiatan() {
     localStorage.setItem("jatirejo_berita", JSON.stringify(newItems));
 
     // Cloud Push
-    fetch("/api/cloud-sync")
+    fetch("/api/cloud-sync", { cache: "no-store" })
       .then((res) => res.json())
       .then((currentData) => {
         const fullPayload = {

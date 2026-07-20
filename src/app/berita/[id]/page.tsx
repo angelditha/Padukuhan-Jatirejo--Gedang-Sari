@@ -26,24 +26,54 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function BeritaDetail({ params }: PageProps) {
-  const id = params.id;
+  const rawId = params.id;
+  const decodedId = decodeURIComponent(rawId);
   const [berita, setBerita] = useState<BeritaItem | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    // 1. Initial check in local storage & default data
     const saved = localStorage.getItem("jatirejo_berita");
-    let allBerita = beritaData;
+    let initialList = beritaData;
     if (saved) {
       try {
-        allBerita = JSON.parse(saved);
+        initialList = JSON.parse(saved);
       } catch (e) {
-        allBerita = beritaData;
+        initialList = beritaData;
       }
     }
-    const found = allBerita.find((item) => item.id === id);
-    setBerita(found || null);
-    setIsLoaded(true);
-  }, [id]);
+
+    const initialFound = initialList.find(
+      (item) => item.id === decodedId || item.id === rawId
+    );
+    if (initialFound) {
+      setBerita(initialFound);
+      setIsLoaded(true);
+    }
+
+    // 2. Fetch latest Cloud Sync data to handle cross-device created articles
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (
+          resData?.success &&
+          resData?.data?.berita &&
+          Array.isArray(resData.data.berita)
+        ) {
+          const cloudList: BeritaItem[] = resData.data.berita;
+          const cloudFound = cloudList.find(
+            (item) => item.id === decodedId || item.id === rawId
+          );
+          if (cloudFound) {
+            setBerita(cloudFound);
+          }
+        }
+      })
+      .catch((err) => console.warn("Cloud sync fetch article error:", err))
+      .finally(() => {
+        setIsLoaded(true);
+      });
+  }, [decodedId, rawId]);
 
   if (!isLoaded) {
     return (
@@ -51,7 +81,7 @@ export default function BeritaDetail({ params }: PageProps) {
         <Navbar />
         <main className="flex-1 flex items-center justify-center py-32 bg-slate-50 dark:bg-zinc-950">
           <div className="animate-pulse text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-            Memuat Artikel...
+            Memuat Artikel Berita...
           </div>
         </main>
         <Footer />
