@@ -129,16 +129,19 @@ export default function Galeri() {
     if (cloudUrl) {
       if (file.type.startsWith("video/")) {
         setMediaType("video");
+        setNewUrl(cloudUrl);
+        setUploadedBase64(cloudUrl);
+        setVideoPoster(cloudUrl);
       } else {
         setMediaType("image");
+        setUploadedBase64(cloudUrl);
+        setVideoPoster("");
+        setNewUrl("");
       }
-      setUploadedBase64(cloudUrl);
-      setVideoPoster(cloudUrl);
-      setNewUrl("");
       return;
     }
 
-    // Fallback: local compression
+    // Fallback: local compression (Ultra-compact <25KB so cloud payload never fails)
     if (file.type.startsWith("video/")) {
       setMediaType("video");
       const reader = new FileReader();
@@ -147,17 +150,16 @@ export default function Galeri() {
         setUploadedBase64(videoDataUrl);
         setNewUrl("");
 
-        // Generate thumbnail from video file frame
         const videoElem = document.createElement("video");
         videoElem.src = videoDataUrl;
         videoElem.currentTime = 0.5;
         videoElem.onloadeddata = () => {
           const canvas = document.createElement("canvas");
-          canvas.width = 640;
-          canvas.height = 360;
+          canvas.width = 480;
+          canvas.height = 270;
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(videoElem, 0, 0, canvas.width, canvas.height);
-          setVideoPoster(canvas.toDataURL("image/jpeg", 0.6));
+          setVideoPoster(canvas.toDataURL("image/jpeg", 0.4));
         };
       };
       reader.readAsDataURL(file);
@@ -169,8 +171,8 @@ export default function Galeri() {
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 700;
-          const MAX_HEIGHT = 500;
+          const MAX_WIDTH = 480;
+          const MAX_HEIGHT = 360;
           let width = img.width;
           let height = img.height;
 
@@ -191,7 +193,7 @@ export default function Galeri() {
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(img, 0, 0, width, height);
 
-          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.5);
+          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.4);
           setUploadedBase64(compressedBase64);
           setVideoPoster("");
           setNewUrl("");
