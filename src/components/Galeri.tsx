@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { galeriData, GaleriItem } from "@/data/galeriData";
 import { useAdmin } from "./AdminContext";
+import { uploadToCloudHost } from "@/lib/uploadImage";
 
 type FilterType = "semua" | "foto" | "video" | "kegiatan" | "potensi" | "budaya";
 
@@ -111,8 +112,8 @@ export default function Galeri() {
     }
   };
 
-  // Convert local File (Image or Video document) to Data URL / Canvas Poster
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Convert local File (Image or Video document) to Cloud Host URL / Compressed Data URL
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -123,8 +124,22 @@ export default function Galeri() {
 
     setFormError("");
 
+    // Try cloud host upload first for instant global sync across all devices
+    const cloudUrl = await uploadToCloudHost(file);
+    if (cloudUrl) {
+      if (file.type.startsWith("video/")) {
+        setMediaType("video");
+      } else {
+        setMediaType("image");
+      }
+      setUploadedBase64(cloudUrl);
+      setVideoPoster(cloudUrl);
+      setNewUrl("");
+      return;
+    }
+
+    // Fallback: local compression
     if (file.type.startsWith("video/")) {
-      // Process Video File
       setMediaType("video");
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -142,7 +157,7 @@ export default function Galeri() {
           canvas.height = 360;
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(videoElem, 0, 0, canvas.width, canvas.height);
-          setVideoPoster(canvas.toDataURL("image/jpeg", 0.7));
+          setVideoPoster(canvas.toDataURL("image/jpeg", 0.6));
         };
       };
       reader.readAsDataURL(file);
@@ -154,8 +169,8 @@ export default function Galeri() {
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 850;
-          const MAX_HEIGHT = 650;
+          const MAX_WIDTH = 700;
+          const MAX_HEIGHT = 500;
           let width = img.width;
           let height = img.height;
 
@@ -176,7 +191,7 @@ export default function Galeri() {
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(img, 0, 0, width, height);
 
-          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.5);
           setUploadedBase64(compressedBase64);
           setVideoPoster("");
           setNewUrl("");
