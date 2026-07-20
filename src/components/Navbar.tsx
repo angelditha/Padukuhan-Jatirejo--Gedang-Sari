@@ -164,7 +164,8 @@ export default function Navbar() {
           </nav>
 
           {/* Mobile Menu Buttons */}
-          <div className="flex items-center gap-4 md:hidden">
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 transition-colors duration-200"
@@ -177,6 +178,20 @@ export default function Navbar() {
               )}
             </button>
 
+            {/* Admin Login Button (Mobile Header) */}
+            <button
+              onClick={openLoginModal}
+              className={`p-2 rounded-full transition-colors duration-200 cursor-pointer border ${
+                isAdmin
+                  ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
+                  : "hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-slate-200 dark:border-zinc-800"
+              }`}
+              title={isAdmin ? "Admin Active" : "Login Admin"}
+            >
+              <Lock className={`w-4 h-4 ${isAdmin ? "text-amber-500" : ""}`} />
+            </button>
+
+            {/* Hamburger Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200"
@@ -196,11 +211,11 @@ export default function Navbar() {
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-b border-emerald-100/5 dark:border-emerald-950/10 ${
           isOpen
-            ? "max-h-96 opacity-100 bg-white dark:bg-zinc-950"
+            ? "max-h-[30rem] opacity-100 bg-white dark:bg-zinc-950"
             : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-2 pt-2 pb-4 space-y-1 sm:px-3 shadow-inner">
+        <div className="px-3 pt-2 pb-4 space-y-1 sm:px-3 shadow-inner">
           {navItems.map((item) => {
             const isActive = isHome && activeSection === item.id;
 
@@ -209,16 +224,32 @@ export default function Navbar() {
                 key={item.id}
                 href={`#${item.id}`}
                 onClick={(e) => handleNavClick(e, item.id)}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                className={`block px-3 py-2.5 rounded-xl text-base font-medium transition-colors duration-200 ${
                   isActive
-                    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
-                    : "text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                    ? "bg-emerald-100/80 text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-400 font-bold"
+                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                 }`}
               >
                 {item.label}
               </a>
             );
           })}
+
+          {/* Admin Portal Link in Mobile Drawer */}
+          <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 mt-2">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                openLoginModal();
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all"
+            >
+              <Lock className="w-4 h-4 text-amber-300" />
+              <span>{isAdmin ? "Portal Admin (Aktif)" : "Login Admin Padukuhan"}</span>
+            </button>
+          </div>
+        </div>
+      </div>
         </div>
       </div>
     </header>
