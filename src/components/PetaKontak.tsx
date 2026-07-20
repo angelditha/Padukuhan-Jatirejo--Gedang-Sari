@@ -324,8 +324,7 @@ export default function PetaKontak() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     <button
-                      type="button"
-                      onClick={handleSendWhatsApp}
+                      type="submit"
                       disabled={isSubmitting}
                       className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-semibold transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 text-xs sm:text-sm font-sans"
                     >
