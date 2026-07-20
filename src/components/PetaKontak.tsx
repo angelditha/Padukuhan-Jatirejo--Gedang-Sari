@@ -79,9 +79,9 @@ export default function PetaKontak() {
 
     setIsSubmitting(true);
     try {
-      const textMessage = `Halo Pak Dukuh Jatirejo,\n\nSaya *${form.nama.trim()}*\nEmail: ${form.email.trim()}\nNo. HP: ${form.telepon.trim()}\n\n*Subjek:* ${form.subjek.trim()}\n\n*Pesan / Aspirasi:* \n${form.pesan.trim()}`;
+      const textMessage = `Halo Bu Dukuh Jatirejo,\n\nSaya *${form.nama.trim()}*\nEmail: ${form.email.trim()}\nNo. HP: ${form.telepon.trim()}\n\n*Subjek:* ${form.subjek.trim()}\n\n*Pesan / Aspirasi:* \n${form.pesan.trim()}`;
       const encodedMessage = encodeURIComponent(textMessage);
-      const targetPhone = "6285932608870"; // Ganti dengan nomor WA Pak Dukuh yang asli
+      const targetPhone = "6283891925807";
       const waUrl = `https://wa.me/${targetPhone}?text=${encodedMessage}`;
 
       window.open(waUrl, "_blank");
@@ -102,9 +102,9 @@ export default function PetaKontak() {
     try {
       const emailSubject = encodeURIComponent(`[Aspirasi Warga] ${form.subjek.trim()}`);
       const emailBody = encodeURIComponent(
-        `Halo Pak Dukuh Jatirejo,\n\nSaya:\nNama: ${form.nama.trim()}\nEmail: ${form.email.trim()}\nNo. HP / WA: ${form.telepon.trim()}\n\nSubjek: ${form.subjek.trim()}\n\nPesan / Aspirasi:\n${form.pesan.trim()}`
+        `Halo Bu Dukuh Jatirejo,\n\nSaya:\nNama: ${form.nama.trim()}\nEmail: ${form.email.trim()}\nNo. HP / WA: ${form.telepon.trim()}\n\nSubjek: ${form.subjek.trim()}\n\nPesan / Aspirasi:\n${form.pesan.trim()}`
       );
-      const mailtoUrl = `mailto:dithaangelditha@gmail.com?subject=${emailSubject}&body=${emailBody}`;
+      const mailtoUrl = `mailto:jatirejopadukuhan@gmail.com?subject=${emailSubject}&body=${emailBody}`;
 
       window.open(mailtoUrl, "_blank");
       setIsSuccess(true);
@@ -148,12 +148,12 @@ export default function PetaKontak() {
                     WhatsApp Dukuh
                   </span>
                   <a
-                    href="https://wa.me/6285932608870"
+                    href="https://wa.me/6283891925807"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm sm:text-base font-bold text-emerald-950 dark:text-white hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors font-sans block truncate"
                   >
-                    +62 812-3456-789
+                    +62 838-9192-5807
                   </a>
                 </div>
               </div>
@@ -167,11 +167,11 @@ export default function PetaKontak() {
                     Surat Elektronik
                   </span>
                   <a
-                    href="mailto:dithaangelditha@gmail.com"
+                    href="mailto:jatirejopadukuhan@gmail.com"
                     className="text-xs sm:text-sm font-bold text-emerald-950 dark:text-white hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors font-sans block break-all leading-snug"
-                    title="jatirejo.hargomulyo@gmail.com"
+                    title="jatirejopadukuhan@gmail.com"
                   >
-                    jatirejo.hargomulyo@gmail.com
+                    jatirejopadukuhan@gmail.com
                   </a>
                 </div>
               </div>

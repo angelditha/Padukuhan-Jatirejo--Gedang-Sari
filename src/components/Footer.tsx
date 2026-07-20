@@ -155,21 +155,21 @@ export default function Footer() {
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4.5 h-4.5 text-amber-400 shrink-0" />
                 <a
-                  href="https://wa.me/6285932608870"
+                  href="https://wa.me/6283891925807"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-amber-300 transition-colors"
                 >
-                  +62 85932608870 (Dukuh)
+                  +62 838-9192-5807 (Bu Dukuh)
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4.5 h-4.5 text-amber-400 shrink-0" />
                 <a
-                  href="mailto:dithaangelditha@gmail.com"
+                  href="mailto:jatirejopadukuhan@gmail.com"
                   className="hover:text-amber-300 transition-colors"
                 >
-                  dithaangelditha@gmail.com
+                  jatirejopadukuhan@gmail.com
                 </a>
               </li>
             </ul>
