@@ -35,11 +35,38 @@ export default function Budaya() {
     } else {
       setItems(budayaData);
     }
+
+    // Cloud Sync fetch
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData?.success && resData?.data?.budaya && Array.isArray(resData.data.budaya)) {
+          setItems(resData.data.budaya);
+          localStorage.setItem("jatirejo_budaya", JSON.stringify(resData.data.budaya));
+        }
+      })
+      .catch((e) => console.warn("Cloud sync fetch:", e));
   }, []);
 
   const saveToStorage = (newItems: BudayaItem[]) => {
     setItems(newItems);
     localStorage.setItem("jatirejo_budaya", JSON.stringify(newItems));
+
+    // Cloud Push
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((currentData) => {
+        const fullPayload = {
+          ...(currentData?.data || {}),
+          budaya: newItems,
+        };
+        return fetch("/api/cloud-sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fullPayload),
+        });
+      })
+      .catch((e) => console.error("Cloud push failed:", e));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

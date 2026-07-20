@@ -42,7 +42,7 @@ export default function Galeri() {
   const [formSuccess, setFormSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load from localStorage on client-side mount
+  // Load from localStorage and sync from Cloud API for multi-device support
   useEffect(() => {
     const saved = localStorage.getItem("galeri_images");
     if (saved) {
@@ -54,7 +54,39 @@ export default function Galeri() {
     } else {
       setImages(galeriData);
     }
+
+    // Async Cloud Sync fetch across all devices
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
+          setImages(resData.data.galeri);
+          localStorage.setItem("galeri_images", JSON.stringify(resData.data.galeri));
+        }
+      })
+      .catch((err) => console.warn("Cloud sync fetch fallback:", err));
   }, []);
+
+  const syncToCloud = (updatedList: GaleriItem[]) => {
+    setImages(updatedList);
+    localStorage.setItem("galeri_images", JSON.stringify(updatedList));
+
+    // Push update to Cloud API
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((currentData) => {
+        const fullPayload = {
+          ...(currentData?.data || {}),
+          galeri: updatedList,
+        };
+        return fetch("/api/cloud-sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fullPayload),
+        });
+      })
+      .catch((e) => console.error("Cloud push failed:", e));
+  };
 
   const filteredData = images.filter((item) => {
     if (filter === "semua") return true;
@@ -201,8 +233,7 @@ export default function Galeri() {
     };
 
     const updated = [newItem, ...images];
-    setImages(updated);
-    localStorage.setItem("galeri_images", JSON.stringify(updated));
+    syncToCloud(updated);
 
     // Reset Form & Show Success
     setNewTitle("");
@@ -221,15 +252,13 @@ export default function Galeri() {
   const handleDeleteImage = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     const updated = images.filter((item) => item.id !== id);
-    setImages(updated);
-    localStorage.setItem("galeri_images", JSON.stringify(updated));
+    syncToCloud(updated);
     setSelectedIdx(null);
   };
 
   const handleResetGallery = () => {
     if (window.confirm("Apakah Anda yakin ingin mengembalikan galeri ke default? Semua foto & video tambahan akan dihapus.")) {
-      setImages(galeriData);
-      localStorage.removeItem("galeri_images");
+      syncToCloud(galeriData);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };

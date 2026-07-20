@@ -43,11 +43,38 @@ export default function Potensi() {
     } else {
       setItems(potensiData);
     }
+
+    // Cloud Sync fetch
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
+          setItems(resData.data.potensi);
+          localStorage.setItem("jatirejo_potensi", JSON.stringify(resData.data.potensi));
+        }
+      })
+      .catch((e) => console.warn("Cloud sync fetch:", e));
   }, []);
 
   const saveToStorage = (newItems: PotensiItem[]) => {
     setItems(newItems);
     localStorage.setItem("jatirejo_potensi", JSON.stringify(newItems));
+
+    // Cloud Push
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((currentData) => {
+        const fullPayload = {
+          ...(currentData?.data || {}),
+          potensi: newItems,
+        };
+        return fetch("/api/cloud-sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fullPayload),
+        });
+      })
+      .catch((e) => console.error("Cloud push failed:", e));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

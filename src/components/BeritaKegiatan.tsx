@@ -35,11 +35,38 @@ export default function BeritaKegiatan() {
     } else {
       setItems(beritaData);
     }
+
+    // Cloud Sync fetch
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
+          setItems(resData.data.berita);
+          localStorage.setItem("jatirejo_berita", JSON.stringify(resData.data.berita));
+        }
+      })
+      .catch((e) => console.warn("Cloud sync fetch:", e));
   }, []);
 
   const saveToStorage = (newItems: BeritaItem[]) => {
     setItems(newItems);
     localStorage.setItem("jatirejo_berita", JSON.stringify(newItems));
+
+    // Cloud Push
+    fetch("/api/cloud-sync")
+      .then((res) => res.json())
+      .then((currentData) => {
+        const fullPayload = {
+          ...(currentData?.data || {}),
+          berita: newItems,
+        };
+        return fetch("/api/cloud-sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fullPayload),
+        });
+      })
+      .catch((e) => console.error("Cloud push failed:", e));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
