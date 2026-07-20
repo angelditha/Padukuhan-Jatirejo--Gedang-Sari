@@ -12,6 +12,7 @@ interface FormState {
   pesan: string;
 }
 
+// Official Kontak Padukuhan Jatirejo: jatirejopadukuhan@gmail.com | +62 838-9192-5807
 const initialForm: FormState = {
   nama: "",
   email: "",
