@@ -59,7 +59,7 @@ export default function Profil() {
                 VISI
               </span>
               <p className="text-lg sm:text-xl font-semibold leading-relaxed italic font-sans text-emerald-50">
-                &ldquo;Terwujudnya Padukuhan Jatirejo yang Maju, Sejahtera, Berbudaya Luhur, dan Lestari Berlandaskan Gotong Royong.&rdquo;
+                &ldquo;Terwujudnya Padukuhan Jatirejo yang maju, mandiri, aman, rukun, sejahtera, berbudaya, serta berlandaskan nilai-nilai gotong royong dan kepedulian terhadap lingkungan.&rdquo;
               </p>
             </div>
 

@@ -65,7 +65,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-lg sm:text-xl md:text-2xl text-zinc-300 max-w-3xl mx-auto font-sans font-light leading-relaxed"
         >
-          Mewujudkan masyarakat yang mandiri, melestarikan adat budaya luhur, dan menjaga keasrian potensi alam pegunungan Gunungkidul.
+         Terwujudnya Padukuhan Jatirejo yang maju, mandiri, aman, rukun, sejahtera, berbudaya, serta berlandaskan nilai-nilai gotong royong dan kepedulian terhadap lingkungan.
         </motion.p>
 
         {/* Action Buttons */}
