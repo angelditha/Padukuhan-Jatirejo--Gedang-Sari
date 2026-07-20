@@ -36,13 +36,29 @@ export default function Budaya() {
       setItems(budayaData);
     }
 
-    // Cloud Sync fetch
+    // Cloud Sync fetch with auto-merge for local items
     fetch("/api/cloud-sync", { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (resData?.success && resData?.data?.budaya && Array.isArray(resData.data.budaya)) {
-          setItems(resData.data.budaya);
-          localStorage.setItem("jatirejo_budaya", JSON.stringify(resData.data.budaya));
+          const cloudList: BudayaItem[] = resData.data.budaya;
+          const saved = localStorage.getItem("jatirejo_budaya");
+          if (saved) {
+            try {
+              const localList: BudayaItem[] = JSON.parse(saved);
+              const missingInCloud = localList.filter(
+                (localItem) => !cloudList.some((c) => c.id === localItem.id)
+              );
+              if (missingInCloud.length > 0) {
+                saveToStorage([...missingInCloud, ...cloudList]);
+                return;
+              }
+            } catch (e) {
+              console.warn("Parse error:", e);
+            }
+          }
+          setItems(cloudList);
+          localStorage.setItem("jatirejo_budaya", JSON.stringify(cloudList));
         }
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
