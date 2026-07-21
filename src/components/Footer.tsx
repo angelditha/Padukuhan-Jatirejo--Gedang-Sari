@@ -107,9 +107,6 @@ export default function Footer() {
             <p className="text-sm text-emerald-200/80 leading-relaxed font-sans font-light">
               Media informasi resmi dan digitalisasi Padukuhan Jatirejo, Kalurahan Hargomulyo, Kapanewon Kokap, Kabupaten Gunungkidul. Wadah kolaborasi potensi alam, warisan budaya, dan kearifan lokal.
             </p>
-            <div className="flex items-center gap-3 pt-2">
-              Instagram | Facebook | Youtube
-              </div>
           </div>
 
           {/* Col 2: Navigation Links */}
@@ -182,16 +179,8 @@ export default function Footer() {
             </h3>
             <div className="text-sm font-sans font-light space-y-2 text-emerald-200/80">
               <div className="flex justify-between border-b border-emerald-900 pb-1">
-                <span>Senin - Kamis:</span>
-                <span className="font-medium text-white">08:00 - 14:00</span>
-              </div>
-              <div className="flex justify-between border-b border-emerald-900 pb-1">
-                <span>Jumat:</span>
-                <span className="font-medium text-white">08:00 - 11:30</span>
-              </div>
-              <div className="flex justify-between border-b border-emerald-900 pb-1">
-                <span>Sabtu - Minggu:</span>
-                <span className="text-amber-400 font-medium">Tutup</span>
+                <span>Setiap Hari:</span>
+                <span className="font-medium text-white">08:00 - 23:00</span>
               </div>
             </div>
             <p className="text-xs text-emerald-300/60 leading-relaxed pt-1">

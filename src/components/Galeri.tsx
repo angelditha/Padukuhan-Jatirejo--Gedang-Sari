@@ -86,6 +86,21 @@ export default function Galeri() {
         }
       })
       .catch((err) => console.warn("Cloud sync fetch fallback:", err));
+
+    // Real-time polling interval (every 4 seconds) for instant live updates across all devices
+    const interval = setInterval(() => {
+      fetch("/api/cloud-sync", { cache: "no-store" })
+        .then((res) => res.json())
+        .then((resData) => {
+          if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
+            setImages(resData.data.galeri);
+            localStorage.setItem("galeri_images", JSON.stringify(resData.data.galeri));
+          }
+        })
+        .catch((e) => console.warn("Realtime poll error:", e));
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const syncToCloud = (updatedList: GaleriItem[]) => {

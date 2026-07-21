@@ -70,6 +70,21 @@ export default function Potensi() {
         }
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
+
+    // Real-time polling interval (every 4 seconds)
+    const interval = setInterval(() => {
+      fetch("/api/cloud-sync", { cache: "no-store" })
+        .then((res) => res.json())
+        .then((resData) => {
+          if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
+            setItems(resData.data.potensi);
+            localStorage.setItem("jatirejo_potensi", JSON.stringify(resData.data.potensi));
+          }
+        })
+        .catch((e) => console.warn("Realtime poll error:", e));
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const saveToStorage = (newItems: PotensiItem[]) => {

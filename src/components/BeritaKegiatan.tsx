@@ -62,6 +62,21 @@ export default function BeritaKegiatan() {
         }
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
+
+    // Real-time polling interval (every 4 seconds)
+    const interval = setInterval(() => {
+      fetch("/api/cloud-sync", { cache: "no-store" })
+        .then((res) => res.json())
+        .then((resData) => {
+          if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
+            setItems(resData.data.berita);
+            localStorage.setItem("jatirejo_berita", JSON.stringify(resData.data.berita));
+          }
+        })
+        .catch((e) => console.warn("Realtime poll error:", e));
+    }, 4000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const saveToStorage = (newItems: BeritaItem[]) => {
