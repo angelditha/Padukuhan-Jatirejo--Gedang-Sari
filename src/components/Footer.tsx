@@ -105,7 +105,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm text-emerald-200/80 leading-relaxed font-sans font-light">
-              Media informasi resmi dan digitalisasi Padukuhan Jatirejo, Kalurahan Hargomulyo, Kapanewon Kokap, Kabupaten Gunungkidul. Wadah kolaborasi potensi alam, warisan budaya, dan kearifan lokal.
+              Media Informasi Resmi dan Digitalisasi Padukuhan Jatirejo, Kalurahan Hargomulyo, Kapanewon Gedangsari, Kabupaten Gunungkidul, Daerah Istimewa Yogyakarta (DIY)
             </p>
           </div>
 

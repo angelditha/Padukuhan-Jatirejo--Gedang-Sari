@@ -6,8 +6,7 @@ import { ShieldCheck, MapPin, Users, Home, Landmark } from "lucide-react";
 
 export default function Profil() {
   const stats = [
-    { label: "Luas Wilayah", value: "± 42 Hektar", icon: MapPin },
-    { label: "Jumlah Penduduk", value: "± 400 Jiwa", icon: Users },
+    { label: "Jumlah Penduduk", value: "± 500 Jiwa", icon: Users },
     { label: "Kepala Keluarga (KK)", value: "± 174 KK", icon: Home },
     { label: "Rukun Tetangga (RT)", value: "4 RT (RT 01 - 04)", icon: Landmark },
   ];
@@ -83,7 +82,7 @@ export default function Profil() {
         </div>
 
         {/* Demographic / Stats Bar (Green-Tinted Cards) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-10 border-t border-slate-100 dark:border-zinc-800/50">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 pt-10 border-t border-slate-100 dark:border-zinc-800/50">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
