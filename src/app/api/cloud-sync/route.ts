@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 // High-reliability multi-provider cloud database for Padukuhan Jatirejo
 const PRIMARY_CLOUD_URL = "https://api.jsonbin.io/v3/b/66928420e41b4d34e4125b29";
 const SECONDARY_CLOUD_URL = "https://api.npoint.io/401ae6b4d3e5cf7381b1";

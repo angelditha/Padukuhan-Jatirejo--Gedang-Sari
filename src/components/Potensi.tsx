@@ -44,27 +44,12 @@ export default function Potensi() {
       setItems(potensiData);
     }
 
-    // Cloud Sync fetch with auto-merge for local items
+    // Cloud Sync fetch
     fetch("/api/cloud-sync", { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
           const cloudList: PotensiItem[] = resData.data.potensi;
-          const saved = localStorage.getItem("jatirejo_potensi");
-          if (saved) {
-            try {
-              const localList: PotensiItem[] = JSON.parse(saved);
-              const missingInCloud = localList.filter(
-                (localItem) => !cloudList.some((c) => c.id === localItem.id)
-              );
-              if (missingInCloud.length > 0) {
-                saveToStorage([...missingInCloud, ...cloudList]);
-                return;
-              }
-            } catch (e) {
-              console.warn("Parse error:", e);
-            }
-          }
           setItems(cloudList);
           localStorage.setItem("jatirejo_potensi", JSON.stringify(cloudList));
         }

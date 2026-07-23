@@ -56,31 +56,12 @@ export default function Galeri() {
       setImages(galeriData);
     }
 
-    // Async Cloud Sync fetch across all devices with auto-merge for mobile uploads
+    // Async Cloud Sync fetch across all devices
     fetch("/api/cloud-sync", { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
           const cloudList: GaleriItem[] = resData.data.galeri;
-
-          // Check if local device has items missing from cloud DB
-          const saved = localStorage.getItem("galeri_images");
-          if (saved) {
-            try {
-              const localList: GaleriItem[] = JSON.parse(saved);
-              const missingInCloud = localList.filter(
-                (localItem) => !cloudList.some((c) => c.id === localItem.id)
-              );
-              if (missingInCloud.length > 0) {
-                const mergedList = [...missingInCloud, ...cloudList];
-                syncToCloud(mergedList);
-                return;
-              }
-            } catch (e) {
-              console.warn("Local storage parse error:", e);
-            }
-          }
-
           setImages(cloudList);
           localStorage.setItem("galeri_images", JSON.stringify(cloudList));
         }
