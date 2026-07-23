@@ -6,6 +6,7 @@ import { Sprout, ShoppingBag, Compass, Beef, Droplet, X, ArrowRight, Plus, Edit,
 import { potensiData, PotensiItem } from "@/data/potensiData";
 import { useAdmin } from "./AdminContext";
 import { fetchCloudData, saveCloudData } from "../lib/cloudSync";
+import { uploadToCloudHost } from "../lib/uploadImage";
 
 const iconMap: Record<string, React.ComponentType<any>> = {
   Sprout: Sprout,
@@ -103,41 +104,55 @@ export default function Potensi() {
       return;
     }
 
-    setFormError("");
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 480;
-        const MAX_HEIGHT = 360;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, width, height);
-
-        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.4);
-        setUploadedBase64(compressedBase64);
+    setFormError("Sedang mengunggah foto ke cloud storage...");
+    uploadToCloudHost(file).then((url) => {
+      if (url) {
+        setUploadedBase64(url);
         setImageUrl("");
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
+        setFormError("");
+      } else {
+        // Fallback to compressed base64 if cloud host upload fails
+        setFormError("Gagal mengunggah ke cloud storage, mengompresi gambar lokal...");
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 480;
+            const MAX_HEIGHT = 360;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx?.drawImage(img, 0, 0, width, height);
+
+            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.4);
+            setUploadedBase64(compressedBase64);
+            setImageUrl("");
+            setFormError("");
+          };
+          img.src = event.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+      }
+    }).catch((e) => {
+      console.warn("Upload error, falling back:", e);
+      setFormError("Terjadi kesalahan, mengompresi gambar lokal...");
+    });
   };
 
   const handleOpenAdd = () => {
