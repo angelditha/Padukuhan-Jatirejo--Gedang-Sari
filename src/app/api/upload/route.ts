@@ -8,26 +8,28 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "No file provided" }, { status: 400 });
     }
 
-    // 1. Prepare ImgBB payload
-    const imgbbFormData = new FormData();
-    imgbbFormData.append("image", file);
+    // 1. Prepare Catbox payload
+    const catboxFormData = new FormData();
+    catboxFormData.append("reqtype", "fileupload");
+    catboxFormData.append("fileToUpload", file);
 
-    console.log("Uploading file to ImgBB server-to-server...");
-    const res = await fetch("https://api.imgbb.com/1/upload?key=9c5f4b301988898144b679469e35ff93", {
+    console.log("Uploading file to Catbox server-to-server...");
+    const res = await fetch("https://catbox.moe/user/api.php", {
       method: "POST",
-      body: imgbbFormData,
+      body: catboxFormData,
     });
 
     if (res.ok) {
-      const data = await res.json();
-      if (data?.data?.url) {
-        return NextResponse.json({ success: true, url: data.data.url });
+      const url = await res.text();
+      if (url && url.startsWith("http")) {
+        console.log("Catbox upload success URL:", url.trim());
+        return NextResponse.json({ success: true, url: url.trim() });
       }
     }
 
     const errText = await res.text();
-    console.error("ImgBB upload failed on server:", errText);
-    return NextResponse.json({ success: false, error: "Upload failed on server" }, { status: 500 });
+    console.error("Catbox upload failed on server:", errText);
+    return NextResponse.json({ success: false, error: "Upload failed on server: " + errText }, { status: 500 });
   } catch (err: any) {
     console.error("Upload API route error:", err);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
