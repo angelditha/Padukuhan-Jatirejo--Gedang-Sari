@@ -3,7 +3,7 @@
 
 const CLOUD_STORAGE_KEY = "jatirejo_cloud_v1";
 // Public high-reliability cloud database endpoint for real-time multi-device sync
-const CLOUD_API_URL = "https://extendsclass.com/api/json-storage/bin/abcbecb";
+const CLOUD_API_URL = "https://jsonblob.com/api/jsonBlob/019f8e84-5e6d-7b87-9285-37b83c6d9751";
 
 export interface CloudDataPayload {
   galeri?: any[];
