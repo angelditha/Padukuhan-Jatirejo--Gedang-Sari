@@ -45,7 +45,7 @@ export default function Potensi() {
     }
 
     // Cloud Sync fetch
-    fetch("/api/cloud-sync", { cache: "no-store" })
+    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
@@ -58,7 +58,7 @@ export default function Potensi() {
 
     // Real-time polling interval (every 4 seconds)
     const interval = setInterval(() => {
-      fetch("/api/cloud-sync", { cache: "no-store" })
+      fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
         .then((res) => res.json())
         .then((resData) => {
           if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
@@ -77,7 +77,7 @@ export default function Potensi() {
     localStorage.setItem("jatirejo_potensi", JSON.stringify(newItems));
 
     // Cloud Push
-    fetch("/api/cloud-sync", { cache: "no-store" })
+    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((currentData) => {
         const fullPayload = {

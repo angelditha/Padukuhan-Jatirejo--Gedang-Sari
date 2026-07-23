@@ -37,7 +37,7 @@ export default function BeritaKegiatan() {
     }
 
     // Cloud Sync fetch
-    fetch("/api/cloud-sync", { cache: "no-store" })
+    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
@@ -50,7 +50,7 @@ export default function BeritaKegiatan() {
 
     // Real-time polling interval (every 4 seconds)
     const interval = setInterval(() => {
-      fetch("/api/cloud-sync", { cache: "no-store" })
+      fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
         .then((res) => res.json())
         .then((resData) => {
           if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
@@ -69,7 +69,7 @@ export default function BeritaKegiatan() {
     localStorage.setItem("jatirejo_berita", JSON.stringify(newItems));
 
     // Cloud Push
-    fetch("/api/cloud-sync", { cache: "no-store" })
+    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((currentData) => {
         const fullPayload = {

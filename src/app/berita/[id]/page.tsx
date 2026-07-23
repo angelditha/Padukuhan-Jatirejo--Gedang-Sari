@@ -52,7 +52,7 @@ export default function BeritaDetail({ params }: PageProps) {
     }
 
     // 2. Fetch latest Cloud Sync data to handle cross-device created articles
-    fetch("/api/cloud-sync")
+    fetch(`/api/cloud-sync?t=${Date.now()}`)
       .then((res) => res.json())
       .then((resData) => {
         if (

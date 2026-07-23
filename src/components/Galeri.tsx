@@ -57,7 +57,7 @@ export default function Galeri() {
     }
 
     // Async Cloud Sync fetch across all devices
-    fetch("/api/cloud-sync", { cache: "no-store" })
+    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((resData) => {
         if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
@@ -70,7 +70,7 @@ export default function Galeri() {
 
     // Real-time polling interval (every 4 seconds) for instant live updates across all devices
     const interval = setInterval(() => {
-      fetch("/api/cloud-sync", { cache: "no-store" })
+      fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
         .then((res) => res.json())
         .then((resData) => {
           if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
@@ -89,7 +89,7 @@ export default function Galeri() {
     localStorage.setItem("galeri_images", JSON.stringify(updatedList));
 
     // Push update to Cloud API
-    fetch("/api/cloud-sync", { cache: "no-store" })
+    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((currentData) => {
         const fullPayload = {
