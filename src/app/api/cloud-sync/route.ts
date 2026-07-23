@@ -68,11 +68,17 @@ export async function POST(req: Request) {
       body: JSON.stringify(globalMemoryStore),
     });
 
-    if (res.ok) {
-      const json = await res.json();
-      if (json) {
-        globalMemoryStore = json;
-      }
+    if (!res.ok) {
+      const errText = await res.text();
+      return NextResponse.json(
+        { success: false, error: `Cloud database write failed: ${res.status} ${errText}` },
+        { status: res.status }
+      );
+    }
+
+    const json = await res.json();
+    if (json) {
+      globalMemoryStore = json;
     }
 
     return NextResponse.json(

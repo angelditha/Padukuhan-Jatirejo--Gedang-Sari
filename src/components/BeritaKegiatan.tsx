@@ -80,7 +80,21 @@ export default function BeritaKegiatan() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ berita: newItems }),
     })
-      .catch((e) => console.error("Cloud push failed:", e));
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((resData) => {
+        if (!resData.success) {
+          throw new Error(resData.error || "Gagal menyimpan");
+        }
+      })
+      .catch((e) => {
+        console.error("Cloud push failed:", e);
+        alert("Gagal menyimpan perubahan ke cloud database! Pastikan koneksi internet stabil dan coba lagi.");
+      });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,8 +112,8 @@ export default function BeritaKegiatan() {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 850;
-        const MAX_HEIGHT = 650;
+        const MAX_WIDTH = 480;
+        const MAX_HEIGHT = 360;
         let width = img.width;
         let height = img.height;
 
@@ -120,7 +134,7 @@ export default function BeritaKegiatan() {
         const ctx = canvas.getContext("2d");
         ctx?.drawImage(img, 0, 0, width, height);
 
-        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.4);
         setUploadedBase64(compressedBase64);
         setImageUrl("");
       };

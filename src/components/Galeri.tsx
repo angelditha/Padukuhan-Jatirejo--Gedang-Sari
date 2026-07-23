@@ -100,7 +100,21 @@ export default function Galeri() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ galeri: updatedList }),
     })
-      .catch((e) => console.error("Cloud push failed:", e));
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((resData) => {
+        if (!resData.success) {
+          throw new Error(resData.error || "Gagal menyimpan");
+        }
+      })
+      .catch((e) => {
+        console.error("Cloud push failed:", e);
+        alert("Gagal menyimpan perubahan ke cloud database! Pastikan koneksi internet stabil dan coba lagi.");
+      });
   };
 
   const filteredData = images.filter((item) => {
