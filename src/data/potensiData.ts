@@ -34,9 +34,9 @@ export const potensiData: PotensiItem[] = [
     id: "peternakan",
     title: "Peternakan Mandiri",
     description:
-      "Peternakan sapi menjadi salah satu kegiatan yang dilakukan oleh sebagian masyarakat Padukuhan Jatirejo. Ternak sapi dipelihara secara mandiri sebagai salah satu sumber pendapatan dan tabungan bagi keluarga.",
+      "Pemeliharaan Ternak di Padukuhan Jatirejo dilakukan oleh masyarakat dalam skala rumah tangga dengan memelihara kambing, ayam, bebek, dan sapi.",
     fullDetails:
-      "Peternakan sapi merupakan salah satu kegiatan ekonomi yang dilakukan oleh sebagian masyarakat Padukuhan Jatirejo. Ternak dipelihara secara mandiri dengan skala rumah tangga sebagai usaha sampingan maupun sumber pendapatan tambahan. Selain memiliki nilai ekonomi, kegiatan peternakan juga menjadi bagian dari kehidupan masyarakat yang berpadu dengan aktivitas pertanian, sehingga turut mendukung keberlangsungan mata pencaharian warga di Padukuhan Jatirejo.",
+      "Pemeliharaan Ternak di Padukuhan Jatirejo umumnya dilakukan oleh masyarakat dalam skala rumah tangga. Warga memelihara berbagai jenis ternak, seperti kambing, ayam, bebek, dan sapi, sebagai bagian dari kegiatan sehari-hari. Kegiatan ini juga mendukung aktivitas pertanian masyarakat, misalnya melalui pemanfaatan kotoran ternak sebagai pupuk organik, sehingga tercipta hubungan yang saling mendukung antara sektor pertanian dan pemeliharaan ternak di Padukuhan Jatirejo.",
     iconName: "Beef",
     imageUrl: "/images/Peternakan.jpg",
   },
