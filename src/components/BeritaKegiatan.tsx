@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Calendar, Tag, ArrowRight, Plus, Edit, Trash2, Upload, X } from "lucide-react";
 import { beritaData, BeritaItem } from "@/data/beritaData";
 import { useAdmin } from "./AdminContext";
+import { fetchCloudData, saveCloudData } from "../lib/cloudSync";
 
 export default function BeritaKegiatan() {
   const { isAdmin } = useAdmin();
@@ -37,12 +38,11 @@ export default function BeritaKegiatan() {
       setItems(beritaData);
     }
 
-    // Cloud Sync fetch
-    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((resData) => {
-        if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
-          const cloudList: BeritaItem[] = resData.data.berita;
+    // Cloud Sync fetch directly from browser
+    fetchCloudData()
+      .then((data) => {
+        if (data && data.berita && Array.isArray(data.berita)) {
+          const cloudList: BeritaItem[] = data.berita;
           if (Date.now() - lastSavedRef.current > 6000) {
             setItems(cloudList);
             localStorage.setItem("jatirejo_berita", JSON.stringify(cloudList));
@@ -51,15 +51,14 @@ export default function BeritaKegiatan() {
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
 
-    // Real-time polling interval (every 4 seconds)
+    // Real-time polling interval (every 4 seconds) directly from browser
     const interval = setInterval(() => {
-      fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-        .then((res) => res.json())
-        .then((resData) => {
-          if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
+      fetchCloudData()
+        .then((data) => {
+          if (data && data.berita && Array.isArray(data.berita)) {
             if (Date.now() - lastSavedRef.current > 6000) {
-              setItems(resData.data.berita);
-              localStorage.setItem("jatirejo_berita", JSON.stringify(resData.data.berita));
+              setItems(data.berita);
+              localStorage.setItem("jatirejo_berita", JSON.stringify(data.berita));
             }
           }
         })
@@ -74,21 +73,11 @@ export default function BeritaKegiatan() {
     setItems(newItems);
     localStorage.setItem("jatirejo_berita", JSON.stringify(newItems));
 
-    // Cloud Push
-    fetch("/api/cloud-sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ berita: newItems }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((resData) => {
-        if (!resData.success) {
-          throw new Error(resData.error || "Gagal menyimpan");
+    // Cloud Push directly from browser
+    saveCloudData("berita", newItems)
+      .then((success) => {
+        if (!success) {
+          throw new Error("Gagal menyimpan ke cloud");
         }
       })
       .catch((e) => {

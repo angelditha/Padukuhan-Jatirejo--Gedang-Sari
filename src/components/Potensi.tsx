@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sprout, ShoppingBag, Compass, Beef, Droplet, X, ArrowRight, Plus, Edit, Trash2, Upload, CheckCircle2 } from "lucide-react";
 import { potensiData, PotensiItem } from "@/data/potensiData";
 import { useAdmin } from "./AdminContext";
+import { fetchCloudData, saveCloudData } from "../lib/cloudSync";
 
 const iconMap: Record<string, React.ComponentType<any>> = {
   Sprout: Sprout,
@@ -45,12 +46,11 @@ export default function Potensi() {
       setItems(potensiData);
     }
 
-    // Cloud Sync fetch
-    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((resData) => {
-        if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
-          const cloudList: PotensiItem[] = resData.data.potensi;
+    // Cloud Sync fetch directly from browser
+    fetchCloudData()
+      .then((data) => {
+        if (data && data.potensi && Array.isArray(data.potensi)) {
+          const cloudList: PotensiItem[] = data.potensi;
           if (Date.now() - lastSavedRef.current > 6000) {
             setItems(cloudList);
             localStorage.setItem("jatirejo_potensi", JSON.stringify(cloudList));
@@ -59,15 +59,14 @@ export default function Potensi() {
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
 
-    // Real-time polling interval (every 4 seconds)
+    // Real-time polling interval (every 4 seconds) directly from browser
     const interval = setInterval(() => {
-      fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-        .then((res) => res.json())
-        .then((resData) => {
-          if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
+      fetchCloudData()
+        .then((data) => {
+          if (data && data.potensi && Array.isArray(data.potensi)) {
             if (Date.now() - lastSavedRef.current > 6000) {
-              setItems(resData.data.potensi);
-              localStorage.setItem("jatirejo_potensi", JSON.stringify(resData.data.potensi));
+              setItems(data.potensi);
+              localStorage.setItem("jatirejo_potensi", JSON.stringify(data.potensi));
             }
           }
         })
@@ -82,21 +81,11 @@ export default function Potensi() {
     setItems(newItems);
     localStorage.setItem("jatirejo_potensi", JSON.stringify(newItems));
 
-    // Cloud Push
-    fetch("/api/cloud-sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ potensi: newItems }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((resData) => {
-        if (!resData.success) {
-          throw new Error(resData.error || "Gagal menyimpan");
+    // Cloud Push directly from browser
+    saveCloudData("potensi", newItems)
+      .then((success) => {
+        if (!success) {
+          throw new Error("Gagal menyimpan ke cloud");
         }
       })
       .catch((e) => {

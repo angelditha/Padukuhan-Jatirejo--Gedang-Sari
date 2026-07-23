@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, Sparkles, CheckCircle, Plus, Edit, Trash2, Upload, X, ArrowRight } from "lucide-react";
 import { budayaData, BudayaItem } from "@/data/budayaData";
 import { useAdmin } from "./AdminContext";
+import { fetchCloudData, saveCloudData } from "../lib/cloudSync";
 
 export default function Budaya() {
   const { isAdmin } = useAdmin();
@@ -37,12 +38,11 @@ export default function Budaya() {
       setItems(budayaData);
     }
 
-    // Cloud Sync fetch
-    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((resData) => {
-        if (resData?.success && resData?.data?.budaya && Array.isArray(resData.data.budaya)) {
-          const cloudList: BudayaItem[] = resData.data.budaya;
+    // Cloud Sync fetch directly from browser
+    fetchCloudData()
+      .then((data) => {
+        if (data && data.budaya && Array.isArray(data.budaya)) {
+          const cloudList: BudayaItem[] = data.budaya;
           if (Date.now() - lastSavedRef.current > 6000) {
             setItems(cloudList);
             localStorage.setItem("jatirejo_budaya", JSON.stringify(cloudList));
@@ -51,15 +51,14 @@ export default function Budaya() {
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
 
-    // Real-time polling interval (every 4 seconds)
+    // Real-time polling interval (every 4 seconds) directly from browser
     const interval = setInterval(() => {
-      fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-        .then((res) => res.json())
-        .then((resData) => {
-          if (resData?.success && resData?.data?.budaya && Array.isArray(resData.data.budaya)) {
+      fetchCloudData()
+        .then((data) => {
+          if (data && data.budaya && Array.isArray(data.budaya)) {
             if (Date.now() - lastSavedRef.current > 6000) {
-              setItems(resData.data.budaya);
-              localStorage.setItem("jatirejo_budaya", JSON.stringify(resData.data.budaya));
+              setItems(data.budaya);
+              localStorage.setItem("jatirejo_budaya", JSON.stringify(data.budaya));
             }
           }
         })
@@ -74,21 +73,11 @@ export default function Budaya() {
     setItems(newItems);
     localStorage.setItem("jatirejo_budaya", JSON.stringify(newItems));
 
-    // Cloud Push
-    fetch("/api/cloud-sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ budaya: newItems }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((resData) => {
-        if (!resData.success) {
-          throw new Error(resData.error || "Gagal menyimpan");
+    // Cloud Push directly from browser
+    saveCloudData("budaya", newItems)
+      .then((success) => {
+        if (!success) {
+          throw new Error("Gagal menyimpan ke cloud");
         }
       })
       .catch((e) => {

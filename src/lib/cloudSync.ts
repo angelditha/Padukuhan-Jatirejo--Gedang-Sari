@@ -13,15 +13,15 @@ export interface CloudDataPayload {
   lastUpdated?: number;
 }
 
-// Fetch dynamic content from Cloud API
+// Fetch dynamic content from Cloud API directly from the client browser
 export async function fetchCloudData(): Promise<CloudDataPayload | null> {
   try {
-    const res = await fetch(CLOUD_API_URL, {
+    const res = await fetch(`${CLOUD_API_URL}?t=${Date.now()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      next: { revalidate: 10 }, // Revalidate every 10 seconds on Vercel
+      cache: "no-store"
     });
 
     if (!res.ok) return null;
@@ -33,14 +33,25 @@ export async function fetchCloudData(): Promise<CloudDataPayload | null> {
   }
 }
 
-// Push updated dynamic content to Cloud API
-export async function saveCloudData(payload: CloudDataPayload): Promise<boolean> {
+// Push updated dynamic content directly from client browser, merging table atomic-style
+export async function saveCloudData(sectionKey: keyof CloudDataPayload, sectionData: any[]): Promise<boolean> {
   try {
+    // 1. Fetch current DB state directly from browser
+    const resGet = await fetch(`${CLOUD_API_URL}?t=${Date.now()}`, { cache: "no-store" });
+    let currentDB: CloudDataPayload = {};
+    if (resGet.ok) {
+      const json = await resGet.json();
+      if (json) currentDB = json;
+    }
+
+    // 2. Merge updated section
     const fullPayload = {
-      ...payload,
+      ...currentDB,
+      [sectionKey]: sectionData,
       lastUpdated: Date.now(),
     };
 
+    // 3. PUT back directly from browser
     const res = await fetch(CLOUD_API_URL, {
       method: "PUT",
       headers: {

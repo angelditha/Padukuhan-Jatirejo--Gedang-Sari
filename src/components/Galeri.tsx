@@ -21,6 +21,7 @@ import {
 import { galeriData, GaleriItem } from "@/data/galeriData";
 import { useAdmin } from "./AdminContext";
 import { uploadToCloudHost } from "@/lib/uploadImage";
+import { fetchCloudData, saveCloudData } from "../lib/cloudSync";
 
 type FilterType = "semua" | "foto" | "video" | "kegiatan" | "potensi" | "budaya";
 
@@ -57,12 +58,11 @@ export default function Galeri() {
       setImages(galeriData);
     }
 
-    // Async Cloud Sync fetch across all devices
-    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((resData) => {
-        if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
-          const cloudList: GaleriItem[] = resData.data.galeri;
+    // Async Cloud Sync fetch across all devices directly from browser
+    fetchCloudData()
+      .then((data) => {
+        if (data && data.galeri && Array.isArray(data.galeri)) {
+          const cloudList: GaleriItem[] = data.galeri;
           if (Date.now() - lastSavedRef.current > 6000) {
             setImages(cloudList);
             localStorage.setItem("galeri_images", JSON.stringify(cloudList));
@@ -71,15 +71,14 @@ export default function Galeri() {
       })
       .catch((err) => console.warn("Cloud sync fetch fallback:", err));
 
-    // Real-time polling interval (every 4 seconds) for instant live updates across all devices
+    // Real-time polling interval (every 4 seconds) directly from browser
     const interval = setInterval(() => {
-      fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-        .then((res) => res.json())
-        .then((resData) => {
-          if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
+      fetchCloudData()
+        .then((data) => {
+          if (data && data.galeri && Array.isArray(data.galeri)) {
             if (Date.now() - lastSavedRef.current > 6000) {
-              setImages(resData.data.galeri);
-              localStorage.setItem("galeri_images", JSON.stringify(resData.data.galeri));
+              setImages(data.galeri);
+              localStorage.setItem("galeri_images", JSON.stringify(data.galeri));
             }
           }
         })
@@ -94,21 +93,11 @@ export default function Galeri() {
     setImages(updatedList);
     localStorage.setItem("galeri_images", JSON.stringify(updatedList));
 
-    // Push update to Cloud API
-    fetch("/api/cloud-sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ galeri: updatedList }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((resData) => {
-        if (!resData.success) {
-          throw new Error(resData.error || "Gagal menyimpan");
+    // Push update to Cloud API directly from browser
+    saveCloudData("galeri", updatedList)
+      .then((success) => {
+        if (!success) {
+          throw new Error("Gagal menyimpan ke cloud");
         }
       })
       .catch((e) => {
