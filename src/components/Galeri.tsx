@@ -48,13 +48,14 @@ export default function Galeri() {
   // Load from localStorage and sync from Cloud API for multi-device support
   useEffect(() => {
     const saved = localStorage.getItem("galeri_images");
-    if (saved) {
+    if (saved && !saved.includes("data:image/")) {
       try {
         setImages(JSON.parse(saved));
       } catch (e) {
         setImages(galeriData);
       }
     } else {
+      localStorage.removeItem("galeri_images");
       setImages(galeriData);
     }
 

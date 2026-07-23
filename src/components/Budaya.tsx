@@ -29,13 +29,14 @@ export default function Budaya() {
 
   useEffect(() => {
     const saved = localStorage.getItem("jatirejo_budaya");
-    if (saved) {
+    if (saved && !saved.includes("data:image/")) {
       try {
         setItems(JSON.parse(saved));
       } catch (e) {
         setItems(budayaData);
       }
     } else {
+      localStorage.removeItem("jatirejo_budaya");
       setItems(budayaData);
     }
 

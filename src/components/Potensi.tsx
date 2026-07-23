@@ -37,13 +37,14 @@ export default function Potensi() {
 
   useEffect(() => {
     const saved = localStorage.getItem("jatirejo_potensi");
-    if (saved) {
+    if (saved && !saved.includes("data:image/")) {
       try {
         setItems(JSON.parse(saved));
       } catch (e) {
         setItems(potensiData);
       }
     } else {
+      localStorage.removeItem("jatirejo_potensi");
       setItems(potensiData);
     }
 

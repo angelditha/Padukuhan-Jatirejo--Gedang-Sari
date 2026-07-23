@@ -29,13 +29,14 @@ export default function BeritaKegiatan() {
 
   useEffect(() => {
     const saved = localStorage.getItem("jatirejo_berita");
-    if (saved) {
+    if (saved && !saved.includes("data:image/")) {
       try {
         setItems(JSON.parse(saved));
       } catch (e) {
         setItems(beritaData);
       }
     } else {
+      localStorage.removeItem("jatirejo_berita");
       setItems(beritaData);
     }
 
