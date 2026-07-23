@@ -42,6 +42,7 @@ export default function Galeri() {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lastSavedRef = useRef<number>(0);
 
   // Load from localStorage and sync from Cloud API for multi-device support
   useEffect(() => {
@@ -62,8 +63,10 @@ export default function Galeri() {
       .then((resData) => {
         if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
           const cloudList: GaleriItem[] = resData.data.galeri;
-          setImages(cloudList);
-          localStorage.setItem("galeri_images", JSON.stringify(cloudList));
+          if (Date.now() - lastSavedRef.current > 6000) {
+            setImages(cloudList);
+            localStorage.setItem("galeri_images", JSON.stringify(cloudList));
+          }
         }
       })
       .catch((err) => console.warn("Cloud sync fetch fallback:", err));
@@ -74,8 +77,10 @@ export default function Galeri() {
         .then((res) => res.json())
         .then((resData) => {
           if (resData?.success && resData?.data?.galeri && Array.isArray(resData.data.galeri)) {
-            setImages(resData.data.galeri);
-            localStorage.setItem("galeri_images", JSON.stringify(resData.data.galeri));
+            if (Date.now() - lastSavedRef.current > 6000) {
+              setImages(resData.data.galeri);
+              localStorage.setItem("galeri_images", JSON.stringify(resData.data.galeri));
+            }
           }
         })
         .catch((e) => console.warn("Realtime poll error:", e));
@@ -85,6 +90,7 @@ export default function Galeri() {
   }, []);
 
   const syncToCloud = (updatedList: GaleriItem[]) => {
+    lastSavedRef.current = Date.now();
     setImages(updatedList);
     localStorage.setItem("galeri_images", JSON.stringify(updatedList));
 

@@ -31,6 +31,7 @@ export default function Potensi() {
   const [uploadedBase64, setUploadedBase64] = useState("");
   const [formError, setFormError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lastSavedRef = useRef<number>(0);
 
   useEffect(() => {
     const saved = localStorage.getItem("jatirejo_potensi");
@@ -50,8 +51,10 @@ export default function Potensi() {
       .then((resData) => {
         if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
           const cloudList: PotensiItem[] = resData.data.potensi;
-          setItems(cloudList);
-          localStorage.setItem("jatirejo_potensi", JSON.stringify(cloudList));
+          if (Date.now() - lastSavedRef.current > 6000) {
+            setItems(cloudList);
+            localStorage.setItem("jatirejo_potensi", JSON.stringify(cloudList));
+          }
         }
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
@@ -62,8 +65,10 @@ export default function Potensi() {
         .then((res) => res.json())
         .then((resData) => {
           if (resData?.success && resData?.data?.potensi && Array.isArray(resData.data.potensi)) {
-            setItems(resData.data.potensi);
-            localStorage.setItem("jatirejo_potensi", JSON.stringify(resData.data.potensi));
+            if (Date.now() - lastSavedRef.current > 6000) {
+              setItems(resData.data.potensi);
+              localStorage.setItem("jatirejo_potensi", JSON.stringify(resData.data.potensi));
+            }
           }
         })
         .catch((e) => console.warn("Realtime poll error:", e));
@@ -73,6 +78,7 @@ export default function Potensi() {
   }, []);
 
   const saveToStorage = (newItems: PotensiItem[]) => {
+    lastSavedRef.current = Date.now();
     setItems(newItems);
     localStorage.setItem("jatirejo_potensi", JSON.stringify(newItems));
 

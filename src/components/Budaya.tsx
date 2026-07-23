@@ -23,6 +23,7 @@ export default function Budaya() {
   const [uploadedBase64, setUploadedBase64] = useState("");
   const [formError, setFormError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lastSavedRef = useRef<number>(0);
 
   useEffect(() => {
     const saved = localStorage.getItem("jatirejo_budaya");
@@ -42,8 +43,10 @@ export default function Budaya() {
       .then((resData) => {
         if (resData?.success && resData?.data?.budaya && Array.isArray(resData.data.budaya)) {
           const cloudList: BudayaItem[] = resData.data.budaya;
-          setItems(cloudList);
-          localStorage.setItem("jatirejo_budaya", JSON.stringify(cloudList));
+          if (Date.now() - lastSavedRef.current > 6000) {
+            setItems(cloudList);
+            localStorage.setItem("jatirejo_budaya", JSON.stringify(cloudList));
+          }
         }
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
@@ -54,8 +57,10 @@ export default function Budaya() {
         .then((res) => res.json())
         .then((resData) => {
           if (resData?.success && resData?.data?.budaya && Array.isArray(resData.data.budaya)) {
-            setItems(resData.data.budaya);
-            localStorage.setItem("jatirejo_budaya", JSON.stringify(resData.data.budaya));
+            if (Date.now() - lastSavedRef.current > 6000) {
+              setItems(resData.data.budaya);
+              localStorage.setItem("jatirejo_budaya", JSON.stringify(resData.data.budaya));
+            }
           }
         })
         .catch((e) => console.warn("Realtime poll error:", e));
@@ -65,6 +70,7 @@ export default function Budaya() {
   }, []);
 
   const saveToStorage = (newItems: BudayaItem[]) => {
+    lastSavedRef.current = Date.now();
     setItems(newItems);
     localStorage.setItem("jatirejo_budaya", JSON.stringify(newItems));
 

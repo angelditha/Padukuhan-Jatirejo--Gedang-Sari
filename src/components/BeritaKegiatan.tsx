@@ -23,6 +23,7 @@ export default function BeritaKegiatan() {
   const [uploadedBase64, setUploadedBase64] = useState("");
   const [formError, setFormError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lastSavedRef = useRef<number>(0);
 
   useEffect(() => {
     const saved = localStorage.getItem("jatirejo_berita");
@@ -42,8 +43,10 @@ export default function BeritaKegiatan() {
       .then((resData) => {
         if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
           const cloudList: BeritaItem[] = resData.data.berita;
-          setItems(cloudList);
-          localStorage.setItem("jatirejo_berita", JSON.stringify(cloudList));
+          if (Date.now() - lastSavedRef.current > 6000) {
+            setItems(cloudList);
+            localStorage.setItem("jatirejo_berita", JSON.stringify(cloudList));
+          }
         }
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
@@ -54,8 +57,10 @@ export default function BeritaKegiatan() {
         .then((res) => res.json())
         .then((resData) => {
           if (resData?.success && resData?.data?.berita && Array.isArray(resData.data.berita)) {
-            setItems(resData.data.berita);
-            localStorage.setItem("jatirejo_berita", JSON.stringify(resData.data.berita));
+            if (Date.now() - lastSavedRef.current > 6000) {
+              setItems(resData.data.berita);
+              localStorage.setItem("jatirejo_berita", JSON.stringify(resData.data.berita));
+            }
           }
         })
         .catch((e) => console.warn("Realtime poll error:", e));
@@ -65,6 +70,7 @@ export default function BeritaKegiatan() {
   }, []);
 
   const saveToStorage = (newItems: BeritaItem[]) => {
+    lastSavedRef.current = Date.now();
     setItems(newItems);
     localStorage.setItem("jatirejo_berita", JSON.stringify(newItems));
 
