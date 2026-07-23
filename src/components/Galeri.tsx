@@ -95,19 +95,11 @@ export default function Galeri() {
     localStorage.setItem("galeri_images", JSON.stringify(updatedList));
 
     // Push update to Cloud API
-    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((currentData) => {
-        const fullPayload = {
-          ...(currentData?.data || {}),
-          galeri: updatedList,
-        };
-        return fetch("/api/cloud-sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(fullPayload),
-        });
-      })
+    fetch("/api/cloud-sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ galeri: updatedList }),
+    })
       .catch((e) => console.error("Cloud push failed:", e));
   };
 

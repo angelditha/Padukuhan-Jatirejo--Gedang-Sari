@@ -75,19 +75,11 @@ export default function Budaya() {
     localStorage.setItem("jatirejo_budaya", JSON.stringify(newItems));
 
     // Cloud Push
-    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((currentData) => {
-        const fullPayload = {
-          ...(currentData?.data || {}),
-          budaya: newItems,
-        };
-        return fetch("/api/cloud-sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(fullPayload),
-        });
-      })
+    fetch("/api/cloud-sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ budaya: newItems }),
+    })
       .catch((e) => console.error("Cloud push failed:", e));
   };
 

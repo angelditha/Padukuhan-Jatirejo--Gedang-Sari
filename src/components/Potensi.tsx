@@ -83,19 +83,11 @@ export default function Potensi() {
     localStorage.setItem("jatirejo_potensi", JSON.stringify(newItems));
 
     // Cloud Push
-    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((currentData) => {
-        const fullPayload = {
-          ...(currentData?.data || {}),
-          potensi: newItems,
-        };
-        return fetch("/api/cloud-sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(fullPayload),
-        });
-      })
+    fetch("/api/cloud-sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ potensi: newItems }),
+    })
       .catch((e) => console.error("Cloud push failed:", e));
   };
 

@@ -75,19 +75,11 @@ export default function BeritaKegiatan() {
     localStorage.setItem("jatirejo_berita", JSON.stringify(newItems));
 
     // Cloud Push
-    fetch(`/api/cloud-sync?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((currentData) => {
-        const fullPayload = {
-          ...(currentData?.data || {}),
-          berita: newItems,
-        };
-        return fetch("/api/cloud-sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(fullPayload),
-        });
-      })
+    fetch("/api/cloud-sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ berita: newItems }),
+    })
       .catch((e) => console.error("Cloud push failed:", e));
   };
 

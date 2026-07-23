@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 // High-reliability JSONBlob database for Padukuhan Jatirejo
-const CLOUD_BLOB_URL = "https://jsonblob.com/api/jsonBlob/019f8e68-cf96-7795-8b11-ae3c4b2100e8";
+const CLOUD_BLOB_URL = "https://jsonblob.com/api/jsonBlob/019f8e84-5e6d-7b87-9285-37b83c6d9751";
 
 let globalMemoryStore: any = null;
 
@@ -38,11 +38,30 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+
+    // 1. Fetch latest fresh database state to prevent overwriting other tables
+    let currentDB: any = {};
+    try {
+      const resGet = await fetch(CLOUD_BLOB_URL, {
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+      });
+      if (resGet.ok) {
+        const json = await resGet.json();
+        if (json) currentDB = json;
+      }
+    } catch (e) {
+      console.warn("Failed to fetch fresh state during write:", e);
+    }
+
+    // 2. Merge incoming payload with existing tables
     globalMemoryStore = {
+      ...currentDB,
       ...body,
       lastUpdated: Date.now(),
     };
 
+    // 3. Save merged state to JSONBlob
     const res = await fetch(CLOUD_BLOB_URL, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
