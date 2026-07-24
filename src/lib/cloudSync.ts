@@ -35,10 +35,14 @@ export async function saveCloudData(sectionKey: keyof CloudDataPayload, sectionD
   try {
     // 1. Fetch current DB state directly from browser
     const resGet = await fetch(`${CLOUD_API_URL}?t=${Date.now()}`, { cache: "no-store" });
-    let currentDB: CloudDataPayload = {};
-    if (resGet.ok) {
-      const json = await resGet.json();
-      if (json) currentDB = json;
+    if (!resGet.ok) {
+      console.warn("Could not fetch current cloud database state. Aborting save to prevent data loss.");
+      return false;
+    }
+    const currentDB = await resGet.json();
+    if (!currentDB || typeof currentDB !== "object") {
+      console.warn("Invalid database format returned. Aborting save.");
+      return false;
     }
 
     // 2. Merge updated section
