@@ -8,27 +8,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "No file provided" }, { status: 400 });
     }
 
-    // 1. Prepare Catbox payload
-    const catboxFormData = new FormData();
-    catboxFormData.append("reqtype", "fileupload");
-    catboxFormData.append("fileToUpload", file);
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const filename = file.name || "upload.png";
 
-    console.log("Uploading file to Catbox server-to-server...");
-    const res = await fetch("https://catbox.moe/user/api.php", {
-      method: "POST",
-      body: catboxFormData,
+    console.log(`Uploading file (${filename}) to Pixeldrain server-to-server...`);
+    const res = await fetch(`https://pixeldrain.com/api/file/${encodeURIComponent(filename)}`, {
+      method: "PUT",
+      body: buffer,
     });
 
     if (res.ok) {
-      const url = await res.text();
-      if (url && url.startsWith("http")) {
-        console.log("Catbox upload success URL:", url.trim());
-        return NextResponse.json({ success: true, url: url.trim() });
+      const data = await res.json();
+      if (data?.success && data?.id) {
+        const directUrl = `https://pixeldrain.com/api/file/${data.id}`;
+        console.log("Pixeldrain upload success URL:", directUrl);
+        return NextResponse.json({ success: true, url: directUrl });
       }
     }
 
     const errText = await res.text();
-    console.error("Catbox upload failed on server:", errText);
+    console.error("Pixeldrain upload failed on server:", errText);
     return NextResponse.json({ success: false, error: "Upload failed on server: " + errText }, { status: 500 });
   } catch (err: any) {
     console.error("Upload API route error:", err);
