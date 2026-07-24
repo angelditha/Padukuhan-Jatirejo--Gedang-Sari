@@ -26,7 +26,7 @@ export const potensiData: PotensiItem[] = [
     description:
       "Kerajinan anyaman bambu menjadi salah satu usaha rumahan yang masih ditekuni oleh sebagian masyarakat Padukuhan Jatirejo. Produk yang dihasilkan berupa tambir dan berbagai anyaman sederhana yang kemudian dipasarkan melalui pengepul sebagai salah satu sumber pendapatan warga.",
     fullDetails:
-      "Kerajinan anyaman bambu merupakan salah satu potensi ekonomi kreatif yang dimiliki oleh Padukuhan Jatirejo. Sebagian masyarakat memanfaatkan bambu yang tersedia sebagai bahan baku untuk membuat tambir melalui proses pengerjaan secara tradisional. Hasil kerajinan tersebut dipasarkan melalui pengepul dan menjadi salah satu sumber pendapatan bagi warga. Selain memiliki nilai ekonomi, kegiatan ini juga menjadi bagian dari upaya menjaga keterampilan menganyam yang telah diwariskan secara turun-temurun.",
+      "Kerajinan anyaman bambu merupakan salah satu potensi ekonomi kreatif yang dimiliki oleh Padukuhan Jatirejo. Sebagian masyarakat memanfaatkan bambu yang tersedia sebagai bahan baku untuk membuat tambir melalui proses pengerjaan secara tradisional. Hasil kerajinan tersebut dipasarkan melalui pengepul and menjadi salah satu sumber pendapatan bagi warga. Selain memiliki nilai ekonomi, kegiatan ini juga menjadi bagian dari upaya menjaga keterampilan menganyam yang telah diwariskan secara turun-temurun.",
     iconName: "ShoppingBag",
     imageUrl: "/images/Anyaman Bambu.jpg",
   },
@@ -34,9 +34,9 @@ export const potensiData: PotensiItem[] = [
     id: "peternakan",
     title: "Peternakan Mandiri",
     description:
-      "Peternakan sapi menjadi salah satu kegiatan yang dilakukan oleh sebagian masyarakat Padukuhan Jatirejo. Ternak sapi dipelihara secara mandiri sebagai salah satu sumber pendapatan dan tabungan bagi keluarga.",
+      "Pemeliharaan Ternak di Padukuhan Jatirejo dilakukan oleh masyarakat dalam skala rumah tangga dengan memelihara kambing, ayam, bebek, dan sapi.",
     fullDetails:
-      "Peternakan sapi merupakan salah satu kegiatan ekonomi yang dilakukan oleh sebagian masyarakat Padukuhan Jatirejo. Ternak dipelihara secara mandiri dengan skala rumah tangga sebagai usaha sampingan maupun sumber pendapatan tambahan. Selain memiliki nilai ekonomi, kegiatan peternakan juga menjadi bagian dari kehidupan masyarakat yang berpadu dengan aktivitas pertanian, sehingga turut mendukung keberlangsungan mata pencaharian warga di Padukuhan Jatirejo.",
+      "Pemeliharaan Ternak di Padukuhan Jatirejo umumnya dilakukan oleh masyarakat dalam skala rumah tangga. Warga memelihara berbagai jenis ternak, seperti kambing, ayam, bebek, dan sapi, sebagai bagian dari kegiatan sehari-hari. Kegiatan ini juga mendukung aktivitas pertanian masyarakat, misalnya melalui pemanfaatan kotoran ternak sebagai pupuk organik, sehingga tercipta hubungan yang saling mendukung antara sektor pertanian dan pemeliharaan ternak di Padukuhan Jatirejo.",
     iconName: "Beef",
     imageUrl: "/images/Peternakan.jpg",
   },

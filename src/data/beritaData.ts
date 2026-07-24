@@ -14,28 +14,28 @@ export const beritaData: BeritaItem[] = [
     id: "posyandu-Juli-2026",
     title: "Kegiatan Posyandu Balita dan Lansia Jatirejo Berjalan Lancar",
     summary: "Pelayanan kesehatan bulanan untuk pemantauan tumbuh kembang balita serta cek kesehatan gratis bagi lansia Padukuhan Jatirejo.",
-    content: `Kader Kesehatan Padukuhan Jatirejo bersama petugas Puskesmas Kapanewon kembali menyelenggarakan kegiatan rutin bulanan Posyandu Balita dan Posyandu Lansia "Mekar Sari" bertempat di Balai Pertemuan Jatirejo.
+    content: `Kader Kesehatan Padukuhan Jatirejo selalu menyelenggarakan kegiatan rutin bulanan Posyandu Balita dan Posyandu Lansia "Pudak Wangi" bertempat di Balai Dusun Jatirejo.
 
-Dalam kegiatan ini, sebanyak 35 balita mendapatkan penimbangan berat badan, pengukuran tinggi badan, pemberian imunisasi dasar, serta pembagian Makanan Pendamping ASI (PMT) bergizi tinggi yang dibuat sendiri oleh kader posyandu.
-
-Sementara itu, untuk kelompok lansia, dilakukan pemeriksaan tekanan darah, cek kadar gula darah, asam urat, serta konseling kesehatan gratis. Selain pemeriksaan fisik, petugas puskesmas juga menyampaikan penyuluhan mengenai pentingnya menjaga pola makan sehat bagi lansia guna mencegah penyakit degeneratif seperti hipertensi dan diabetes di usia senja.`,
+Dalam kegiatan ini, sebanyak 29 balita mendapatkan penimbangan berat badan and pengukuran tinggi badan. Sementara itu, untuk kelompok lansia, dilakukan pemeriksaan tekanan darah.`,
     date: "11 Juli 2026",
     category: "Kesehatan",
     author: "Pengurus Kesehatan",
-    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"
+    imageUrl: "https://i.imgur.com/K3rl06O.png"
   },
   {
     id: "Turnamen Bola Voli Kelurahan",
     title: "Pemuda Karang Taruna Mengikuti Turnamen Bola Voli Kelurahan Hargomulyo Tahun 2026",
-    summary: "Karang Taruna Padukuhan Jatirejo menyelenggarakan pelatihan pembuatan toko online dan pemasaran sosial media bagi pelaku usaha mikro.",
-    content: `Dalam rangka mendorong digitalisasi padukuhan, Karang Taruna bekerja sama dengan mahasiswa KKN menyelenggarakan lokakarya 'Pemasaran Digital untuk UMKM Desa' bagi warga pelaku usaha mikro di Jatirejo.
+    summary: "Turnamen Bola Voli Kelurahan Hargomulyo Tahun 2026 yang diselenggarakan oleh Karang Taruna berlangsung pada 27 Juni–10 Juli 2026 di Lapangan Voli Gelora Mulya Tama. Kegiatan ini menjadi ajang mempererat kebersamaan, menjunjung sportivitas, serta meningkatkan semangat olahraga antarpadukuhan di Kalurahan Hargomulyo.",
+    content: `Hargomulyo, Gedangsari – Karang Taruna Kalurahan Hargomulyo kembali menyelenggarakan Turnamen Bola Voli Kalurahan Hargomulyo Tahun 2026 sebagai ajang kompetisi olahraga sekaligus sarana mempererat tali persaudaraan antarpadukuhan. Kegiatan ini berlangsung mulai 27 Juni hingga 10 Juli 2026 di Lapangan Voli Gelora Mulya Tama, Kalurahan Hargomulyo, Kapanewon Gedangsari, Kabupaten Gunungkidul.
 
-Pelatihan ini mencakup cara memotret produk agar terlihat menarik menggunakan smartphone, mendaftarkan toko di platform e-commerce, mengelola akun WhatsApp Business, serta dasar-dasar iklan gratis lewat media sosial seperti Instagram dan Facebook.
+Turnamen ini diikuti oleh tim-tim perwakilan dari berbagai padukuhan di Kalurahan Hargomulyo yang bertanding secara sportif untuk memperebutkan gelar juara. Selain menjadi ajang kompetisi, kegiatan ini juga bertujuan untuk meningkatkan semangat olahraga, membangun kebersamaan masyarakat, serta memberikan hiburan bagi warga.
 
-Tujuan utama kegiatan ini adalah memperluas pasar produk kerajinan anyaman bambu dan camilan olahan singkong khas Jatirejo agar bisa dikenal luas hingga luar daerah. Dengan memanfaatkan platform digital, diharapkan margin pendapatan UMKM meningkat dan menciptakan kemandirian ekonomi desa berbasis teknologi.`,
-    date: "05 Juni 2026",
+Selama penyelenggaraan turnamen, masyarakat menunjukkan antusiasme yang tinggi dengan hadir memberikan dukungan kepada tim kebanggaannya masing-masing. Sorak sorai penonton dan semangat para pemain menciptakan suasana pertandingan yang meriah dan penuh kekeluargaan.
+
+Melalui penyelenggaraan Turnamen Bola Voli Kalurahan Hargomulyo Tahun 2026, Karang Taruna Kalurahan Hargomulyo berharap kegiatan ini dapat menjadi wadah pembinaan generasi muda di bidang olahraga, memperkuat persatuan antarwarga, serta menumbuhkan semangat hidup sehat melalui aktivitas olahraga. Turnamen ini juga menjadi salah satu agenda tahunan yang mampu mempererat hubungan sosial sekaligus memperkuat rasa kebersamaan di lingkungan Kalurahan Hargomulyo.`,
+    date: "27 Juni 2026",
     category: "Kegiatan",
     author: "Karang Taruna",
-    imageUrl: "/galeri/Voli2.jpeg"
+    imageUrl: "https://i.imgur.com/Oei3eM5.png" // default/placeholder voli or custom image. Let's keep it clean
   },
 ];

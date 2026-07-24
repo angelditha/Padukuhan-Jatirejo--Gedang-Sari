@@ -8,26 +8,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "No file provided" }, { status: 400 });
     }
 
+    // Convert the uploaded file to a base64 string on the server side
     const buffer = Buffer.from(await file.arrayBuffer());
-    const filename = file.name || "upload.png";
+    const base64 = buffer.toString("base64");
 
-    console.log(`Uploading file (${filename}) to Pixeldrain server-to-server...`);
-    const res = await fetch(`https://pixeldrain.com/api/file/${encodeURIComponent(filename)}`, {
-      method: "PUT",
-      body: buffer,
+    console.log(`Uploading file (${file.name}) to Imgur proxy server-to-server...`);
+    const body = new URLSearchParams();
+    body.append("image", base64);
+    body.append("type", "base64");
+
+    const res = await fetch("https://api.imgur.com/3/image", {
+      method: "POST",
+      headers: {
+        "Authorization": "Client-ID 546c25a59c58ad7",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
     });
 
     if (res.ok) {
       const data = await res.json();
-      if (data?.success && data?.id) {
-        const directUrl = `https://pixeldrain.com/api/file/${data.id}`;
-        console.log("Pixeldrain upload success URL:", directUrl);
-        return NextResponse.json({ success: true, url: directUrl });
+      if (data?.success && data?.data?.link) {
+        console.log("Imgur upload success URL:", data.data.link);
+        return NextResponse.json({ success: true, url: data.data.link });
       }
     }
 
     const errText = await res.text();
-    console.error("Pixeldrain upload failed on server:", errText);
+    console.error("Imgur upload failed on server:", errText);
     return NextResponse.json({ success: false, error: "Upload failed on server: " + errText }, { status: 500 });
   } catch (err: any) {
     console.error("Upload API route error:", err);
