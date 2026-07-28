@@ -12,10 +12,10 @@ export interface BudayaItem {
 export const budayaData: BudayaItem[] = [
   {
     id: "gotong-royong",
-    title: "Budaya Gotong Royong (Sambatan)",
+    title: "Budaya Gotong Royong ",
     description: "Semangat kebersamaan yang kokoh dalam membangun rumah warga, jalan desa, maupun membersihkan fasilitas publik.",
     fullDetails: "Gotong Royong merupakan budaya yang terus dilestarikan oleh masyarakat Padukuhan Jatirejo sebagai wujud kebersamaan, kepedulian, dan tanggung jawab bersama terhadap lingkungan. Kegiatan ini diwujudkan melalui Jumat Bersih yang dilaksanakan setiap hari Jumat di masing-masing RT. Warga secara bersama-sama membersihkan jalan lingkungandan berbagai fasilitas umum agar lingkungan tetap bersih, sehat, dan nyaman. Selain itu, semangat gotong royong juga terlihat dalam berbagai kegiatan kemasyarakatan, seperti memperbaiki jalan lingkungan, serta mendukung pelaksanaan kegiatan adat dan sosial. Tradisi ini tidak hanya menjaga kebersihan dan keindahan lingkungan, tetapi juga mempererat tali persaudaraan, menumbuhkan rasa saling peduli, serta memperkuat nilai-nilai kebersamaan yang telah diwariskan secara turun-temurun di Padukuhan Jatirejo.",
-    imageUrl: "https://i.imgur.com/kYe6iyL.png",
+    imageUrl: "/image/Gotong Royong-RT 1.jpeg",
     highlights: []
   },
   {

@@ -7,6 +7,7 @@ import { potensiData, PotensiItem } from "@/data/potensiData";
 import { useAdmin } from "./AdminContext";
 import { fetchCloudData, saveCloudData } from "../lib/cloudSync";
 import { uploadToCloudHost } from "../lib/uploadImage";
+import { compressImageClientSide, generateBase64Thumbnail } from "../lib/imageCompressor";
 
 const iconMap: Record<string, React.ComponentType<any>> = {
   Sprout: Sprout,
@@ -25,7 +26,7 @@ export default function Potensi() {
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState<PotensiItem | null>(null);
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("Sektor Unggulan");
   const [iconName, setIconName] = useState("Sprout");
   const [shortDesc, setShortDesc] = useState("");
   const [fullDetails, setFullDetails] = useState("");
@@ -36,6 +37,7 @@ export default function Potensi() {
   const lastSavedRef = useRef<number>(0);
 
   useEffect(() => {
+    // Load local cache if valid
     const saved = localStorage.getItem("jatirejo_potensi");
     if (saved && !saved.includes("data:image/")) {
       try {
@@ -96,64 +98,42 @@ export default function Potensi() {
       });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Convert local File (Image or Video document) to Cloud Host URL / Compressed Data URL
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 8 * 1024 * 1024) {
-      setFormError("Ukuran file terlalu besar! Maksimal 8MB.");
+    if (file.size > 25 * 1024 * 1024) {
+      setFormError("Ukuran file terlalu besar! Maksimal 25MB.");
       return;
     }
 
-    setFormError("Sedang mengunggah foto ke cloud storage...");
-    uploadToCloudHost(file).then((url) => {
+    try {
+      setFormError("Mengompresi gambar untuk mempercepat upload...");
+      const compressedFile = await compressImageClientSide(file);
+
+      setFormError("Sedang mengunggah foto ke cloud storage...");
+      const url = await uploadToCloudHost(compressedFile);
+
       if (url) {
         setUploadedBase64(url);
         setImageUrl("");
         setFormError("");
       } else {
-        // Fallback to compressed base64 if cloud host upload fails
-        setFormError("Gagal mengunggah ke cloud storage, mengompresi gambar lokal...");
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const MAX_WIDTH = 480;
-            const MAX_HEIGHT = 360;
-            let width = img.width;
-            let height = img.height;
-
-            if (width > height) {
-              if (width > MAX_WIDTH) {
-                height *= MAX_WIDTH / width;
-                width = MAX_WIDTH;
-              }
-            } else {
-              if (height > MAX_HEIGHT) {
-                width *= MAX_HEIGHT / height;
-                height = MAX_HEIGHT;
-              }
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            ctx?.drawImage(img, 0, 0, width, height);
-
-            const compressedBase64 = canvas.toDataURL("image/jpeg", 0.4);
-            setUploadedBase64(compressedBase64);
-            setImageUrl("");
-            setFormError("");
-          };
-          img.src = event.target?.result as string;
-        };
-        reader.readAsDataURL(file);
+        // Fallback to super-small base64 thumbnail if upload fails
+        setFormError("Upload gagal. Mengonversi ke foto mini lokal...");
+        const thumb = await generateBase64Thumbnail(file);
+        setUploadedBase64(thumb);
+        setImageUrl("");
+        setFormError("");
       }
-    }).catch((e) => {
-      console.warn("Upload error, falling back:", e);
-      setFormError("Terjadi kesalahan, mengompresi gambar lokal...");
-    });
+    } catch (err: any) {
+      console.warn("Upload error, falling back:", err);
+      setFormError("Terjadi kesalahan. Mengonversi ke foto mini lokal...");
+      const thumb = await generateBase64Thumbnail(file);
+      setUploadedBase64(thumb);
+      setImageUrl("");
+    }
   };
 
   const handleOpenAdd = () => {

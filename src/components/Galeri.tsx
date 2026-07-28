@@ -22,6 +22,7 @@ import { galeriData, GaleriItem } from "@/data/galeriData";
 import { useAdmin } from "./AdminContext";
 import { uploadToCloudHost } from "@/lib/uploadImage";
 import { fetchCloudData, saveCloudData } from "../lib/cloudSync";
+import { compressImageClientSide, generateBase64Thumbnail } from "../lib/imageCompressor";
 
 type FilterType = "semua" | "foto" | "video" | "kegiatan" | "potensi" | "budaya";
 
@@ -89,20 +90,20 @@ export default function Galeri() {
     return () => clearInterval(interval);
   }, []);
 
-  const syncToCloud = (updatedList: GaleriItem[]) => {
+  const saveToStorage = (newImages: GaleriItem[]) => {
     lastSavedRef.current = Date.now();
-    setImages(updatedList);
-    localStorage.setItem("galeri_images", JSON.stringify(updatedList));
+    setImages(newImages);
+    localStorage.setItem("galeri_images", JSON.stringify(newImages));
 
-    // Push update to Cloud API directly from browser
-    saveCloudData("galeri", updatedList)
+    // Cloud Push directly from browser
+    saveCloudData("galeri", newImages)
       .then((success) => {
         if (!success) {
           throw new Error("Gagal menyimpan ke cloud");
         }
       })
-      .catch((e) => {
-        console.error("Cloud push failed:", e);
+      .catch((err) => {
+        console.error("Cloud sync save error:", err);
         alert("Gagal menyimpan perubahan ke cloud database! Pastikan koneksi internet stabil dan coba lagi.");
       });
   };
@@ -140,85 +141,46 @@ export default function Galeri() {
       return;
     }
 
-    setFormError("");
-
-    // Try cloud host upload first for instant global sync across all devices
-    const cloudUrl = await uploadToCloudHost(file);
-    if (cloudUrl) {
-      if (file.type.startsWith("video/")) {
-        setMediaType("video");
-        setNewUrl(cloudUrl);
-        setUploadedBase64(cloudUrl);
-        setVideoPoster(cloudUrl);
-      } else {
-        setMediaType("image");
-        setUploadedBase64(cloudUrl);
-        setVideoPoster("");
-        setNewUrl("");
+    try {
+      let uploadFile = file;
+      if (file.type.startsWith("image/")) {
+        setFormError("Mengompresi gambar untuk mempercepat upload...");
+        uploadFile = await compressImageClientSide(file);
       }
-      return;
-    }
 
-    // Fallback: local compression (Ultra-compact <25KB so cloud payload never fails)
-    if (file.type.startsWith("video/")) {
-      setMediaType("video");
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const videoDataUrl = event.target?.result as string;
-        setUploadedBase64(videoDataUrl);
-        setNewUrl("");
+      setFormError("Sedang mengunggah ke cloud storage...");
+      const cloudUrl = await uploadToCloudHost(uploadFile);
 
-        const videoElem = document.createElement("video");
-        videoElem.src = videoDataUrl;
-        videoElem.currentTime = 0.5;
-        videoElem.onloadeddata = () => {
-          const canvas = document.createElement("canvas");
-          canvas.width = 480;
-          canvas.height = 270;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(videoElem, 0, 0, canvas.width, canvas.height);
-          setVideoPoster(canvas.toDataURL("image/jpeg", 0.4));
-        };
-      };
-      reader.readAsDataURL(file);
-    } else {
-      // Process Image File
-      setMediaType("image");
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 480;
-          const MAX_HEIGHT = 360;
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.4);
-          setUploadedBase64(compressedBase64);
+      if (cloudUrl) {
+        if (file.type.startsWith("video/")) {
+          setMediaType("video");
+          setNewUrl(cloudUrl);
+          setUploadedBase64(cloudUrl);
+          setVideoPoster(cloudUrl);
+        } else {
+          setMediaType("image");
+          setUploadedBase64(cloudUrl);
           setVideoPoster("");
           setNewUrl("");
-        };
-        img.src = event.target?.result as string;
-      };
-      reader.readAsDataURL(file);
+        }
+        setFormError("");
+      } else {
+        // Fallback: local compression (Ultra-compact <3KB so cloud payload never fails)
+        if (file.type.startsWith("video/")) {
+          setFormError("Gagal mengunggah video ke cloud.");
+        } else {
+          setFormError("Upload gagal. Mengonversi ke foto mini lokal...");
+          const thumb = await generateBase64Thumbnail(file);
+          setMediaType("image");
+          setUploadedBase64(thumb);
+          setVideoPoster("");
+          setNewUrl("");
+          setFormError("");
+        }
+      }
+    } catch (err: any) {
+      console.warn("Upload error, falling back:", err);
+      setFormError("Terjadi kesalahan saat memproses media.");
     }
   };
 
@@ -268,7 +230,7 @@ export default function Galeri() {
     };
 
     const updated = [newItem, ...images];
-    syncToCloud(updated);
+    saveToStorage(updated);
 
     // Reset Form & Show Success
     setNewTitle("");
@@ -287,13 +249,13 @@ export default function Galeri() {
   const handleDeleteImage = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     const updated = images.filter((item) => item.id !== id);
-    syncToCloud(updated);
+    saveToStorage(updated);
     setSelectedIdx(null);
   };
 
   const handleResetGallery = () => {
     if (window.confirm("Apakah Anda yakin ingin mengembalikan galeri ke default? Semua foto & video tambahan akan dihapus.")) {
-      syncToCloud(galeriData);
+      saveToStorage(galeriData);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
