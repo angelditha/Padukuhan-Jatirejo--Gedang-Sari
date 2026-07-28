@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// High-reliability JSONBlob database for Padukuhan Jatirejo
-const CLOUD_BLOB_URL = "https://jsonblob.com/api/jsonBlob/019f8e84-5e6d-7b87-9285-37b83c6d9751";
+// High-reliability ExtendsClass database for Padukuhan Jatirejo
+const CLOUD_BLOB_URL = "https://extendsclass.com/api/json-storage/bin/aacccad";
 
 let globalMemoryStore: any = null;
 
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       lastUpdated: Date.now(),
     };
 
-    // 3. Save merged state to JSONBlob
+    // 3. Save merged state to ExtendsClass
     const res = await fetch(CLOUD_BLOB_URL, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -74,11 +74,6 @@ export async function POST(req: Request) {
         { success: false, error: `Cloud database write failed: ${res.status} ${errText}` },
         { status: res.status }
       );
-    }
-
-    const json = await res.json();
-    if (json) {
-      globalMemoryStore = json;
     }
 
     return NextResponse.json(
