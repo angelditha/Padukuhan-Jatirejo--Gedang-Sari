@@ -1,10 +1,6 @@
 // Cloud Sync Utility for Padukuhan Jatirejo Website
 // Enables instant real-time synchronization of Galeri, Potensi, Budaya, and Berita across all devices (Mobile & Laptop)
 
-const CLOUD_STORAGE_KEY = "jatirejo_cloud_v1";
-// Public high-reliability cloud database endpoint for real-time multi-device sync
-const CLOUD_API_URL = "https://extendsclass.com/api/json-storage/bin/aacccad";
-
 export interface CloudDataPayload {
   galeri?: any[];
   potensi?: any[];
@@ -13,55 +9,42 @@ export interface CloudDataPayload {
   lastUpdated?: number;
 }
 
-// Fetch dynamic content from Cloud API directly from the client browser
+// Fetch dynamic content from local API proxy (same-origin, no CORS blocks)
 export async function fetchCloudData(): Promise<CloudDataPayload | null> {
   try {
-    const res = await fetch(`${CLOUD_API_URL}?t=${Date.now()}`, {
+    const res = await fetch(`/api/cloud-sync?t=${Date.now()}`, {
       method: "GET",
       cache: "no-store"
     });
 
     if (!res.ok) return null;
-    const data = await res.json();
-    return data || null;
+    const json = await res.json();
+    if (json && json.success && json.data) {
+      return json.data;
+    }
+    return null;
   } catch (err) {
     console.warn("Cloud sync fetch fallback to local storage:", err);
     return null;
   }
 }
 
-// Push updated dynamic content directly from client browser, merging table atomic-style
+// Push updated dynamic content directly to local API proxy (same-origin, no CORS blocks)
 export async function saveCloudData(sectionKey: keyof CloudDataPayload, sectionData: any[]): Promise<boolean> {
   try {
-    // 1. Fetch current DB state directly from browser
-    const resGet = await fetch(`${CLOUD_API_URL}?t=${Date.now()}`, { cache: "no-store" });
-    if (!resGet.ok) {
-      console.warn("Could not fetch current cloud database state. Aborting save to prevent data loss.");
-      return false;
-    }
-    const currentDB = await resGet.json();
-    if (!currentDB || typeof currentDB !== "object") {
-      console.warn("Invalid database format returned. Aborting save.");
-      return false;
-    }
-
-    // 2. Merge updated section
-    const fullPayload = {
-      ...currentDB,
-      [sectionKey]: sectionData,
-      lastUpdated: Date.now(),
-    };
-
-    // 3. PUT back directly from browser
-    const res = await fetch(CLOUD_API_URL, {
-      method: "PUT",
+    const res = await fetch("/api/cloud-sync", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(fullPayload),
+      body: JSON.stringify({
+        [sectionKey]: sectionData
+      }),
     });
 
-    return res.ok;
+    if (!res.ok) return false;
+    const json = await res.json();
+    return !!json?.success;
   } catch (err) {
     console.error("Cloud sync save error:", err);
     return false;
