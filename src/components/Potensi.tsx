@@ -53,7 +53,7 @@ export default function Potensi() {
       .then((data) => {
         if (data && data.potensi && Array.isArray(data.potensi)) {
           const cloudList: PotensiItem[] = data.potensi;
-          if (Date.now() - lastSavedRef.current > 6000) {
+          if (Date.now() - lastSavedRef.current > 30000) {
             setItems(cloudList);
             localStorage.setItem("jatirejo_potensi", JSON.stringify(cloudList));
           }
@@ -61,19 +61,19 @@ export default function Potensi() {
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
 
-    // Real-time polling interval (every 4 seconds) directly from browser
+    // Real-time polling interval (every 15 seconds) directly from browser
     const interval = setInterval(() => {
       fetchCloudData()
         .then((data) => {
           if (data && data.potensi && Array.isArray(data.potensi)) {
-            if (Date.now() - lastSavedRef.current > 6000) {
+            if (Date.now() - lastSavedRef.current > 30000) {
               setItems(data.potensi);
               localStorage.setItem("jatirejo_potensi", JSON.stringify(data.potensi));
             }
           }
         })
         .catch((e) => console.warn("Realtime poll error:", e));
-    }, 4000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, []);

@@ -64,7 +64,7 @@ export default function Galeri() {
       .then((data) => {
         if (data && data.galeri && Array.isArray(data.galeri)) {
           const cloudList: GaleriItem[] = data.galeri;
-          if (Date.now() - lastSavedRef.current > 6000) {
+          if (Date.now() - lastSavedRef.current > 30000) {
             setImages(cloudList);
             localStorage.setItem("galeri_images", JSON.stringify(cloudList));
           }
@@ -72,19 +72,19 @@ export default function Galeri() {
       })
       .catch((err) => console.warn("Cloud sync fetch fallback:", err));
 
-    // Real-time polling interval (every 4 seconds) directly from browser
+    // Real-time polling interval (every 15 seconds) directly from browser
     const interval = setInterval(() => {
       fetchCloudData()
         .then((data) => {
           if (data && data.galeri && Array.isArray(data.galeri)) {
-            if (Date.now() - lastSavedRef.current > 6000) {
+            if (Date.now() - lastSavedRef.current > 30000) {
               setImages(data.galeri);
               localStorage.setItem("galeri_images", JSON.stringify(data.galeri));
             }
           }
         })
         .catch((e) => console.warn("Realtime poll error:", e));
-    }, 4000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, []);

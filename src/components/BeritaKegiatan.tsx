@@ -45,7 +45,7 @@ export default function BeritaKegiatan() {
       .then((data) => {
         if (data && data.berita && Array.isArray(data.berita)) {
           const cloudList: BeritaItem[] = data.berita;
-          if (Date.now() - lastSavedRef.current > 6000) {
+          if (Date.now() - lastSavedRef.current > 30000) {
             setItems(cloudList);
             localStorage.setItem("jatirejo_berita", JSON.stringify(cloudList));
           }
@@ -53,19 +53,19 @@ export default function BeritaKegiatan() {
       })
       .catch((e) => console.warn("Cloud sync fetch:", e));
 
-    // Real-time polling interval (every 4 seconds) directly from browser
+    // Real-time polling interval (every 15 seconds) directly from browser
     const interval = setInterval(() => {
       fetchCloudData()
         .then((data) => {
           if (data && data.berita && Array.isArray(data.berita)) {
-            if (Date.now() - lastSavedRef.current > 6000) {
+            if (Date.now() - lastSavedRef.current > 30000) {
               setItems(data.berita);
               localStorage.setItem("jatirejo_berita", JSON.stringify(data.berita));
             }
           }
         })
         .catch((e) => console.warn("Realtime poll error:", e));
-    }, 4000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, []);
