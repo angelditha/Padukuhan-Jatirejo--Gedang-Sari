@@ -9,7 +9,8 @@ let globalMemoryStore: any = null;
 
 export async function GET() {
   try {
-    const res = await fetch(CLOUD_BLOB_URL, {
+    // Append server-side timestamp to completely bypass Next.js/Vercel Data Cache
+    const res = await fetch(`${CLOUD_BLOB_URL}?t=${Date.now()}`, {
       headers: { "Content-Type": "application/json" },
       cache: "no-store",
     });
@@ -39,10 +40,10 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // 1. Fetch latest fresh database state to prevent overwriting other tables
+    // 1. Fetch latest fresh database state using cache buster to prevent overwriting other tables
     let currentDB: any = {};
     try {
-      const resGet = await fetch(CLOUD_BLOB_URL, {
+      const resGet = await fetch(`${CLOUD_BLOB_URL}?t=${Date.now()}`, {
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
       });
